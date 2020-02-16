@@ -1,0 +1,7 @@
+<linker>
+  <assembly fullname="Lego">
+    <type fullname="Lego.Ev3" preserve="all" />
+    <type fullname="Lego.Ev3.Core" preserve="all" />
+    <type fullname="Lego.Ev3.Desktop" preserve="all" />
+  </assembly>
+</linker>
