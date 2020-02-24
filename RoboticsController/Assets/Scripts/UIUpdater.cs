@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using Lego.Ev3;
 using Lego.Ev3.Core;
 using Lego.Ev3.Desktop;
 
@@ -31,7 +30,7 @@ public class UIUpdater : MonoBehaviour
         F1
     }
 
-    async void Start()
+    async void Awake()
     {
         emulator = FindObjectOfType<BotEmulator>();
         defaults = new string[alternates.Length];
@@ -39,12 +38,13 @@ public class UIUpdater : MonoBehaviour
         {
             defaults[i] = keyButtons[i].transform.GetChild(0).GetComponent<TMPro.TMP_Text>().text;
         }
-        brick = new Brick(new BluetoothCommunication("1337420"), true);
         await ToggleHelpDropdown(true);
+        brick = new Brick(new UsbCommunication(), true);
+        await brick.ConnectAsync();
     }
 
     bool dropdownDown = true;
-    async void Update()
+    async void LateUpdate()
     {
         brick.BrickChanged += Brick_BrickChanged;
 
@@ -124,7 +124,7 @@ public class UIUpdater : MonoBehaviour
         #region HorizontalAxis_FUNC
         if (Fwd_FLAG)
         {
-            await emulator.StartMotorAsync(BotEmulator.Polarity.Positive);
+            emulator.StartMotor(BotEmulator.Polarity.Positive);
             await brick.DirectCommand.SetMotorPolarity(OutputPort.All, Polarity.Forward);
             await brick.DirectCommand.StartMotorAsync(OutputPort.All);
             SetButtonColor(keyButtons[(int)Buttons.W], new UnityEngine.Color(0, 0, 0, 0.3921569f));
@@ -136,7 +136,7 @@ public class UIUpdater : MonoBehaviour
 
         if (Bwd_FLAG)
         {
-            await emulator.StartMotorAsync(BotEmulator.Polarity.Negative);
+            emulator.StartMotor(BotEmulator.Polarity.Negative);
             await brick.DirectCommand.SetMotorPolarity(OutputPort.All, Polarity.Backward);
             await brick.DirectCommand.StartMotorAsync(OutputPort.All);
             SetButtonColor(keyButtons[(int)Buttons.S], new UnityEngine.Color(0, 0, 0, 0.3921569f));
@@ -147,13 +147,13 @@ public class UIUpdater : MonoBehaviour
         }
 
         if (!Fwd_FLAG && !Bwd_FLAG && !Input.GetKey(KeyCode.Space))
-            await emulator.StopMotorAsync(false);
+            emulator.StopMotor(false);
         #endregion
 
         #region VerticalAxis_FUNC
         if (Lft_FLAG)
         {
-            await emulator.TurnLeft_UNDEF();
+            emulator.TurnLeft_UNDEF();
             SetButtonColor(keyButtons[(int)Buttons.A], new UnityEngine.Color(0, 0, 0, 0.3921569f));
         }
         if (!Lft_FLAG)
@@ -163,7 +163,7 @@ public class UIUpdater : MonoBehaviour
 
         if (Rgt_FLAG)
         {
-            await emulator.TurnRight_UNDEF();
+            emulator.TurnRight_UNDEF();
             SetButtonColor(keyButtons[(int)Buttons.D], new UnityEngine.Color(0, 0, 0, 0.3921569f));
         }
         if (!Rgt_FLAG)
@@ -172,7 +172,7 @@ public class UIUpdater : MonoBehaviour
         }
 
         if (!Lft_FLAG && !Rgt_FLAG)
-            await emulator.ResetTurn_UNDEF();
+            emulator.ResetTurn_UNDEF();
         #endregion
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -189,7 +189,7 @@ public class UIUpdater : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.Space))
         {
-            await emulator.StopMotorAsync(true);
+            emulator.StopMotor(true);
             await brick.DirectCommand.SetMotorPolarity(OutputPort.All, Polarity.Forward);
             await brick.DirectCommand.StopMotorAsync(OutputPort.All, true);
         }
@@ -207,7 +207,7 @@ public class UIUpdater : MonoBehaviour
 
     void Brick_BrickChanged(object sender, BrickChangedEventArgs eventArgs)
     {
-        throw new System.NotImplementedException();
+        Debug.Log("your code is doo-doo");
     }
 
     public async Task ToggleHelpDropdown(bool show)
@@ -226,6 +226,5 @@ public class UIUpdater : MonoBehaviour
             await Task.Delay((int)(keyButtons[(int)Buttons.F1].colors.fadeDuration / 10 * 5 * 1000));
             keyButtons[(int)Buttons.F1].transform.GetChild(2).gameObject.SetActive(false);
         }
-        await Task.Yield();
     }
 }

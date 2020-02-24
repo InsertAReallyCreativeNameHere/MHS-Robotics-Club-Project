@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Threading;
-using System.Threading.Tasks;
 
 public class BotEmulator : MonoBehaviour
 {
@@ -21,7 +19,7 @@ public class BotEmulator : MonoBehaviour
         Negative = -1
     }
 
-    public async Task StartMotorAsync(Polarity polarity)
+    public void StartMotor(Polarity polarity)
     {
         for (int i = 0; i < wheels.Length; i++)
         {
@@ -32,7 +30,7 @@ public class BotEmulator : MonoBehaviour
         }
     }
 
-    public async Task StopMotorAsync(bool brake)
+    public void StopMotor(bool brake)
     {
         for (int i = 0; i < wheels.Length; i++)
         {
@@ -50,7 +48,7 @@ public class BotEmulator : MonoBehaviour
         }
     }
 
-    public async Task TurnLeft_UNDEF() //This has not been implemented on the real bot.
+    public void TurnLeft_UNDEF() //This has not been implemented on the real bot.
     {
         pivots[(int)Wheels.UL].targetRotation = Quaternion.Euler(-15, 0, 0);
         pivots[(int)Wheels.UR].targetRotation = Quaternion.Euler(-15, 0, 0);
@@ -58,7 +56,7 @@ public class BotEmulator : MonoBehaviour
         pivots[(int)Wheels.LR].targetRotation = Quaternion.Euler(15, 0, 0);
     }
 
-    public async Task TurnRight_UNDEF() //This has not been implemented on the real bot.
+    public void TurnRight_UNDEF() //This has not been implemented on the real bot.
     {
         pivots[(int)Wheels.UL].targetRotation = Quaternion.Euler(15, 0, 0);
         pivots[(int)Wheels.UR].targetRotation = Quaternion.Euler(15, 0, 0);
@@ -66,7 +64,7 @@ public class BotEmulator : MonoBehaviour
         pivots[(int)Wheels.LR].targetRotation = Quaternion.Euler(-15, 0, 0);
     }
 
-    public async Task ResetTurn_UNDEF() //This has not been implemented on the real bot.
+    public void ResetTurn_UNDEF() //This has not been implemented on the real bot.
     {
         pivots[(int)Wheels.UL].targetRotation = Quaternion.Euler(0, 0, 0);
         pivots[(int)Wheels.UR].targetRotation = Quaternion.Euler(0, 0, 0);
