@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using Lego.Ev3.Core;
@@ -8,7 +6,7 @@ using Lego.Ev3.Desktop;
 
 public class UIUpdater : MonoBehaviour
 {
-    public BotEmulator emulator;
+    BotEmulator emulator;
 
     public Button[] keyButtons;
     public string[] alternates;
@@ -39,15 +37,20 @@ public class UIUpdater : MonoBehaviour
             defaults[i] = keyButtons[i].transform.GetChild(0).GetComponent<TMPro.TMP_Text>().text;
         }
         await ToggleHelpDropdown(true);
-        brick = new Brick(new UsbCommunication(), true);
-        await brick.ConnectAsync();
+        Main();
+    }
+
+    async static void Main()
+    {
+        Brick _brick = FindObjectOfType<UIUpdater>().brick;
+        _brick = new Brick(new UsbCommunication(), true);
+        await _brick.ConnectAsync();
+        _brick.BrickChanged += FindObjectOfType<UIUpdater>().Brick_BrickChanged;
     }
 
     bool dropdownDown = true;
     async void LateUpdate()
     {
-        brick.BrickChanged += Brick_BrickChanged;
-
         if (Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt))
         {
             for (int i = 0; i < alternates.Length; i++)
@@ -126,7 +129,7 @@ public class UIUpdater : MonoBehaviour
         {
             emulator.StartMotor(BotEmulator.Polarity.Positive);
             await brick.DirectCommand.SetMotorPolarity(OutputPort.All, Polarity.Forward);
-            await brick.DirectCommand.StartMotorAsync(OutputPort.All);
+            await brick.DirectCommand.TurnMotorAtSpeedAsync(OutputPort.All, 40);
             SetButtonColor(keyButtons[(int)Buttons.W], new UnityEngine.Color(0, 0, 0, 0.3921569f));
         }
         if (!Fwd_FLAG)
@@ -138,7 +141,7 @@ public class UIUpdater : MonoBehaviour
         {
             emulator.StartMotor(BotEmulator.Polarity.Negative);
             await brick.DirectCommand.SetMotorPolarity(OutputPort.All, Polarity.Backward);
-            await brick.DirectCommand.StartMotorAsync(OutputPort.All);
+            await brick.DirectCommand.TurnMotorAtSpeedAsync(OutputPort.All, 40);
             SetButtonColor(keyButtons[(int)Buttons.S], new UnityEngine.Color(0, 0, 0, 0.3921569f));
         }
         if (!Bwd_FLAG)
